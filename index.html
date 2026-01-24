@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSellerAI - Business Discovery Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 900px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            body {
+                padding: 0;
+            }
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* ===== CONTENT AREA ===== */
+        .content {
+            padding: 30px 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== WELCOME SCREEN ===== */
+        .welcome-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .welcome-screen h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .welcome-screen p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* ===== QUESTION SCREEN ===== */
+        .question-screen {
+            display: none;
+        }
+
+        .question-number {
+            font-size: 12px;
+            color: #4facfe;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .question-prompt {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* ===== INPUTS ===== */
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .text-input:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .char-counter.error {
+            color: #e74c3c;
+        }
+
+        .char-counter.success {
+            color: #27ae60;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 45px;
+            font-family: inherit;
+        }
+
+        .select-input:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .radio-container {
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #4facfe;
+            background: #f8f9ff;
+        }
+
+        .radio-option.selected {
+            border-color: #4facfe;
+            background: #f0f7ff;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #4facfe;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* ===== BUTTONS ===== */
+        .button-container {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4facfe;
+            border: 2px solid #4facfe;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f7ff;
+        }
+
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            display: none;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-screen h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .loading-screen p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* ===== RESULTS SCREEN ===== */
+        .results-screen {
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            border-bottom: 1px solid #e6e6e6;
+            margin-bottom: 20px;
+            background: #ffffff;
+        }
+
+        .results-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .results-header p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== BUSINESS CARDS ===== */
+        .business-card {
+            background: #ffffff;
+            border: 1px solid #e3e6ef;
+            border-radius: 18px;
+            padding: 26px 28px;
+            margin: 0 20px 24px 20px;
+        }
+
+        .business-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .business-header > div:first-child {
+            flex: 1;
+        }
+
+        .business-number {
+            font-size: 14px;
+            color: #4facfe;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .business-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .business-tagline {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .viability-score {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+
+        .business-details {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+            min-width: 140px;
+        }
+
+        .detail-value {
+            color: #555;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-craft {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .category-digital {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .category-reseller {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .why-fits {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .why-fits ul {
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+
+        .why-fits li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .action-plan {
+            background: #f8f9ff;
+            border: 1px solid #e3e6ef;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .action-plan h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4facfe;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-plan-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* ===== SUMMARY BOX ===== */
+        .summary-box {
+            background: #f0f7ff;
+            border-left: 4px solid #4facfe;
+            padding: 20px;
+            margin: 0 20px 30px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .summary-box strong {
+            color: #4facfe;
+            font-weight: 600;
+        }
+
+        /* ===== RESULTS ACTIONS ===== */
+        .results-actions {
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #e6e6e6;
+            background: white;
+        }
+
+        /* ===== ERROR MESSAGE ===== */
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SmartSellerAI</h1>
+            <p>Etsy Business Discovery Engine</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="content">
+            <!-- ===== WELCOME SCREEN ===== -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <h2>Discover Your Perfect Etsy Business</h2>
+                <p>Answer a few questions about your goals, skills, and lifestyle. We'll generate 15 hyper-specific business ideas tailored just for you.</p>
+                <div class="button-container">
+                    <button class="btn btn-primary" id="startButton">Start Your Discovery</button>
+                </div>
+            </div>
+
+            <!-- ===== QUESTION SCREEN ===== -->
+            <div class="question-screen" id="questionScreen">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-prompt" id="questionPrompt"></div>
+                <div class="input-container" id="inputContainer"></div>
+                <div class="button-container">
+                    <button class="btn btn-primary" id="continueButton" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- ===== LOADING SCREEN ===== -->
+            <div class="loading-screen" id="loadingScreen">
+                <div class="spinner"></div>
+                <h3>Generating Your Businesses...</h3>
+                <p>This usually takes 10-30 seconds</p>
+            </div>
+
+            <!-- ===== RESULTS SCREEN ===== -->
+            <div class="results-screen" id="resultsScreen">
+                <div class="results-header">
+                    <h2>Your Personalized Businesses</h2>
+                    <p>Here are 15 business ideas curated specifically for you</p>
+                </div>
+                <div id="resultsContainer"></div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="restartButton">Start Over</button>
+                    <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Results</button>
+                    <button class="btn btn-secondary" onclick="copyResultsToClipboard()">📋 Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const GENERATE_API = "https://smartsellerai-generate.smartselleraico.workers.dev";
+
+        // ===== QUESTION MATRIX =====
+        const QUESTION_MATRIX = {
+            questions: [
+                {
+                    id: 'q1',
+                    prompt: 'Tell me about yourself. What\'s your story? What do you currently do, and what are you passionate about?',
+                    type: 'text',
+                    minLength: 30,
+                    required: true
+                },
+                {
+                    id: 'q2',
+                    prompt: 'How many hours per week can you realistically dedicate to building a business?',
+                    type: 'select',
+                    options: [
+                        { value: '1-3', label: '1-3 hours/week' },
+                        { value: '3-5', label: '3-5 hours/week' },
+                        { value: '5-10', label: '5-10 hours/week' },
+                        { value: '10-20', label: '10-20 hours/week' },
+                        { value: '20+', label: '20+ hours/week' }
+                    ],
+                    required: true
+                },
+                {
+                    id: 'q3',
+                    prompt: 'What\'s your budget ceiling to get started?',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '$0 (No budget)' },
+                        { value: '1-50', label: '$1-50' },
+                        { value: '50-100', label: '$50-100' },
+                        { value: '100-300', label: '$100-300' },
+                        { value: '300-500', label: '$300-500' },
+                        { value: '500+', label: '$500+' }
+                    ],
+                    required: true
+                },
+                {
+                    id: 'q4',
+                    prompt: 'How do you feel about financial risk?',
+                    type: 'select',
+                    options: [
+                        { value: 'zero', label: 'Zero risk - I can\'t afford to lose anything' },
+                        { value: 'low', label: 'Low risk - Small experiments only' },
+                        { value: 'medium', label: 'Medium risk - Willing to invest if potential is high' },
+                        { value: 'high', label: 'High risk - Go big or go home' }
+                    ],
+                    required: true
+                },
+                {
+                    id: 'q5',
+                    prompt: 'Do you enjoy creating things from scratch? (Writing, designing, crafting, building)',
+                    type: 'radio',
+                    options: [
+                        { value: 'yes', label: 'Yes, I love creating things' },
+                        { value: 'no', label: 'No, I prefer working with existing products' }
+                    ],
+                    required: true,
+                    branch: {
+                        yes: 'q5a',
+                        no: 'q5b'
+                    }
+                },
+                {
+                    id: 'q5a',
+                    prompt: 'What do you most enjoy creating? Describe your creative process and any skills you have.',
+                    type: 'text',
+                    minLength: 30,
+                    required: true,
+                    condition: { question: 'q5', answer: 'yes' }
+                },
+                {
+                    id: 'q5b',
+                    prompt: 'What stops you from creating things from scratch?',
+                    type: 'text',
+                    minLength: 30,
+                    required: true,
+                    condition: { question: 'q5', answer: 'no' }
+                },
+                {
+                    id: 'q6',
+                    prompt: 'Do you have any sales or marketing experience?',
+                    type: 'radio',
+                    options: [
+                        { value: 'yes', label: 'Yes, I\'ve sold products or services before' },
+                        { value: 'no', label: 'No, I\'m new to sales and marketing' }
+                    ],
+                    required: true,
+                    branch: {
+                        yes: 'q6a',
+                        no: 'q6b'
+                    }
+                },
+                {
+                    id: 'q6a',
+                    prompt: 'Tell me about your sales/marketing experience. What did you sell, and what worked for you?',
+                    type: 'text',
+                    minLength: 30,
+                    required: true,
+                    condition: { question: 'q6', answer: 'yes' }
+                },
+                {
+                    id: 'q6b',
+                    prompt: 'What interests you about selling? Or what concerns do you have about it?',
+                    type: 'text',
+                    minLength: 30,
+                    required: true,
+                    condition: { question: 'q6', answer: 'no' }
+                },
+                {
+                    id: 'q7',
+                    prompt: 'What topics or industries genuinely interest you? What could you talk about for hours?',
+                    type: 'text',
+                    minLength: 30,
+                    required: true
+                },
+                {
+                    id: 'q8',
+                    prompt: 'Are you ready to discover business ideas based on your answers? This will generate 15 personalized opportunities.',
+                    type: 'radio',
+                    options: [
+                        { value: 'yes', label: 'Yes, generate my personalized business ideas' }
+                    ],
+                    required: true
+                }
+            ]
+        };
+
+        // ===== APP STATE =====
+        let currentQuestionIndex = 0;
+        let answers = {};
+        let questionOrder = [];
+
+        // ===== DOM ELEMENTS =====
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const questionScreen = document.getElementById('questionScreen');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const startButton = document.getElementById('startButton');
+        const continueButton = document.getElementById('continueButton');
+        const restartButton = document.getElementById('restartButton');
+        const progressFill = document.getElementById('progressFill');
+
+        // ===== EVENT LISTENERS =====
+        startButton.addEventListener('click', startQuiz);
+        continueButton.addEventListener('click', handleContinue);
+        restartButton.addEventListener('click', resetApp);
+
+        // ===== CORE FUNCTIONS =====
+        
+        function startQuiz() {
+            welcomeScreen.style.display = 'none';
+            questionScreen.style.display = 'block';
+            answers = {};
+            currentQuestionIndex = 0;
+            questionOrder = buildQuestionOrder();
+            showQuestion();
+        }
+
+        function buildQuestionOrder() {
+            const order = [];
+            const mainQuestions = QUESTION_MATRIX.questions.filter(q => !q.condition);
+            
+            for (const question of mainQuestions) {
+                order.push(question.id);
+                
+                if (question.branch && answers[question.id]) {
+                    const nextQuestion = question.branch[answers[question.id]];
+                    if (nextQuestion) {
+                        order.push(nextQuestion);
+                    }
+                }
+            }
+            
+            return order;
+        }
+
+        function showQuestion() {
+            const questionId = questionOrder[currentQuestionIndex];
+            const question = QUESTION_MATRIX.questions.find(q => q.id === questionId);
+            
+            if (!question) {
+                finishQuiz();
+                return;
+            }
+
+            // Check condition
+            if (question.condition && answers[question.condition.question] !== question.condition.answer) {
+                currentQuestionIndex++;
+                showQuestion();
+                return;
+            }
+
+            updateProgress();
+
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1} of ${questionOrder.length}`;
+            document.getElementById('questionPrompt').textContent = question.prompt;
+            
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.innerHTML = '';
+            
+            if (question.type === 'text') {
+                renderTextInput(question, inputContainer);
+            } else if (question.type === 'select') {
+                renderSelectInput(question, inputContainer);
+            } else if (question.type === 'radio') {
+                renderRadioInput(question, inputContainer);
+            }
+        }
+
+        function renderTextInput(question, container) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'text-input';
+            input.id = 'answerInput';
+            input.placeholder = 'Type your answer...';
+            if (answers[question.id]) {
+                input.value = answers[question.id];
+            }
+            
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.id = 'charCounter';
+            
+            const updateCounter = () => {
+                const length = input.value.length;
+                counter.textContent = `${length} / ${question.minLength} characters minimum`;
+                
+                if (length >= question.minLength) {
+                    counter.className = 'char-counter success';
+                    continueButton.disabled = false;
+                } else {
+                    counter.className = 'char-counter error';
+                    continueButton.disabled = true;
+                }
+            };
+            
+            input.addEventListener('input', updateCounter);
+            
+            container.appendChild(input);
+            container.appendChild(counter);
+            
+            updateCounter();
+        }
+
+        function renderSelectInput(question, container) {
+            const select = document.createElement('select');
+            select.className = 'select-input';
+            select.id = 'answerInput';
+            
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Choose an option...';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            select.appendChild(placeholder);
+            
+            question.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                if (answers[question.id] === opt.value) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            select.addEventListener('change', () => {
+                continueButton.disabled = !select.value;
+            });
+            
+            container.appendChild(select);
+            continueButton.disabled = !answers[question.id];
+        }
+
+        function renderRadioInput(question, container) {
+            const radioContainer = document.createElement('div');
+            radioContainer.className = 'radio-container';
+            
+            question.options.forEach(opt => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'radio-option';
+                if (answers[question.id] === opt.value) {
+                    optionDiv.classList.add('selected');
+                }
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = question.id;
+                input.value = opt.value;
+                input.id = `${question.id}_${opt.value}`;
+                if (answers[question.id] === opt.value) {
+                    input.checked = true;
+                }
+                
+                const label = document.createElement('label');
+                label.htmlFor = input.id;
+                label.textContent = opt.label;
+                
+                optionDiv.appendChild(input);
+                optionDiv.appendChild(label);
+                
+                optionDiv.addEventListener('click', () => {
+                    input.checked = true;
+                    document.querySelectorAll('.radio-option').forEach(el => el.classList.remove('selected'));
+                    optionDiv.classList.add('selected');
+                    continueButton.disabled = false;
+                });
+                
+                radioContainer.appendChild(optionDiv);
+            });
+            
+            container.appendChild(radioContainer);
+            continueButton.disabled = !answers[question.id];
+        }
+
+        function handleContinue() {
+            const questionId = questionOrder[currentQuestionIndex];
+            const question = QUESTION_MATRIX.questions.find(q => q.id === questionId);
+            
+            let answer = '';
+            const inputEl = document.getElementById('answerInput');
+            
+            if (question.type === 'text' || question.type === 'select') {
+                answer = inputEl.value;
+            } else if (question.type === 'radio') {
+                const checked = document.querySelector(`input[name="${question.id}"]:checked`);
+                answer = checked ? checked.value : '';
+            }
+            
+            if (!answer && question.required) {
+                showError('Please provide an answer before continuing.');
+                return;
+            }
+            
+            if (question.type === 'text' && answer.length < question.minLength) {
+                showError(`Please write at least ${question.minLength} characters.`);
+                return;
+            }
+            
+            hideError();
+            answers[question.id] = answer;
+            
+            if (question.branch) {
+                questionOrder = buildQuestionOrder();
+            }
+            
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex >= questionOrder.length) {
+                finishQuiz();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questionOrder.length) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        async function finishQuiz() {
+            questionScreen.style.display = 'none';
+            loadingScreen.style.display = 'flex';
+
+            try {
+                const response = await fetch(GENERATE_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ answers })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data || !data.businesses || !Array.isArray(data.businesses)) {
+                    throw new Error('Invalid response format from API');
+                }
+
+                loadingScreen.style.display = 'none';
+                resultsScreen.style.display = 'block';
+                displayResults(data);
+
+            } catch (err) {
+                loadingScreen.style.display = 'none';
+                alert("Failed to generate businesses. Please try again or contact support.");
+                console.error('Generation error:', err);
+                resetApp();
+            }
+        }
+
+        function displayResults(data) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+            
+            const summary = data.summary || "";
+            const businesses = data.businesses || [];
+            
+            if (summary) {
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'summary-box';
+                summaryDiv.innerHTML = `<strong>Your Profile:</strong> ${summary}`;
+                container.appendChild(summaryDiv);
+            }
+            
+            businesses.forEach((business, index) => {
+                const card = document.createElement('div');
+                card.className = 'business-card';
+                
+                card.innerHTML = `
+                    <div class="business-header">
+                        <div>
+                            <div class="business-number">IDEA #${index + 1}</div>
+                            <div class="business-name">${business.name || 'Unnamed Business'}</div>
+                            <div class="business-tagline">"${business.tagline || 'No tagline'}"</div>
+                        </div>
+                        <div class="viability-score">${business.viability_score || 0}%</div>
+                    </div>
+                    <div class="business-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Budget Required:</span>
+                            <span class="detail-value">${business.budget || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Time Commitment:</span>
+                            <span class="detail-value">${business.time || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Projected Profit:</span>
+                            <span class="detail-value">${business.projected_profit || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Category:</span>
+                            <span class="category-badge category-${business.category || 'digital'}">${(business.category || 'digital').toUpperCase()}</span>
+                        </div>
+                        ${business.why_this_fits && business.why_this_fits.length > 0 ? `
+                        <div class="why-fits">
+                            <span class="detail-label">Why this fits you:</span>
+                            <ul>
+                                ${business.why_this_fits.map(reason => `<li>${reason}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                        ${business.first_72_hours ? `
+                        <div class="action-plan">
+                            <h4>First 72 Hours Action Plan:</h4>
+                            <div class="action-plan-content">${business.first_72_hours}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function resetApp() {
+            answers = {};
+            currentQuestionIndex = 0;
+            questionOrder = [];
+            
+            document.getElementById('resultsContainer').innerHTML = '';
+            
+            resultsScreen.style.display = 'none';
+            loadingScreen.style.display = 'none';
+            questionScreen.style.display = 'none';
+            welcomeScreen.style.display = 'flex';
+            
+            progressFill.style.width = '0%';
+        }
+
+        function copyResultsToClipboard() {
+            const container = document.getElementById('resultsContainer');
+            const text = container.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Results copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy. Please try selecting and copying manually.');
+            });
+        }
+    </script>
+</body>
+</html>
